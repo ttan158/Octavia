@@ -3,21 +3,23 @@ import { inngest } from "./client";
 import { db } from "~/server/db";
 
 export const generateSong = inngest.createFunction(
-  { id: "generate-song", concurrency: {
-    limit: 1,
-    key: "event.data.userId",
-  }, 
-  onFailure: async ({event, error}) => {
-    await db.song.update({
-      where: {
-        id: event?.data?.event?.data?.songId,
-      },
-      data: {
-        status: "failed",
-      }
-    })
-  }
-},
+  { 
+    id: "generate-song", 
+    concurrency: {
+      limit: 1,
+      key: "event.data.userId",
+    }, 
+    onFailure: async ({event, error}) => {
+      await db.song.update({
+        where: {
+          id: event?.data?.event?.data?.songId,
+        },
+        data: {
+          status: "failed",
+        }
+      })
+    }
+  },
   { event: "generate-song-event" },
   async ({ event, step }) => {
     const {songId} = event.data as {
@@ -50,24 +52,24 @@ export const generateSong = inngest.createFunction(
       });
 
       type RequestBody = {
-        guidanceScale?: number;
-        inferStep?: number;
-        audioDuration?: number;
+        guidance_scale?: number;
+        infer_step?: number;
+        audio_duration?: number;
         seed?: number;
-        fullDescribedSong?: string;
+        full_described_song?: string;
         prompt?: string;
         lyrics?: string;
-        describedLyrics?: string;
-        instrumental?: string;
+        described_lyrics?: string;
+        instrumental?: boolean;
       }
 
       let endpoint = "";
       let body: RequestBody = {}
 
       const commonParams = {
-        guidanceScale: song.guidanceScale ?? undefined,
-        inferStep: song.inferStep ?? undefined,
-        audioDuration: song.audioDuration ?? undefined,
+        guidance_scale: song.guidanceScale ?? undefined,
+        infer_step: song.inferStep ?? undefined,
+        audio_duration: song.audioDuration ?? undefined,
         seed: song.seed ?? undefined,
         instrumental: song.instrumental ?? undefined,
       }
@@ -75,7 +77,7 @@ export const generateSong = inngest.createFunction(
       if(song.fullDescribedSong) {
         endpoint = env.GENERATE_FROM_DESCRIPTION;
         body = {
-          fullDescribedSong: song.fullDescribedSong,
+          full_described_song: song.fullDescribedSong,
           ...commonParams,
         };
       }
@@ -92,14 +94,14 @@ export const generateSong = inngest.createFunction(
       else if (song.describedLyrics && song.prompt) {
         endpoint = env.GENERATE_FROM_DESCRIBED_LYRICS;
         body = {
-          describedLyrics: song.describedLyrics,
+          described_lyrics: song.describedLyrics,
           prompt: song.prompt,
           ...commonParams,
         }
       }
 
       return {
-        userId: song.userId,
+        userId: song.user.id,
         credits: song.user.credits,
         endpoint: endpoint,
         body: body,
@@ -131,18 +133,18 @@ export const generateSong = inngest.createFunction(
 
       await step.run("update-song-result", async() => {
         const responseData = response.ok ? ((await response.json()) as {
-          s3Key: string;
-          coverImageS3Key: string;
-          categories: string[]
-        })
-        : null;
+          s3_key: string;
+          cover_image_s3_key: string;
+          categories: string[];
+          })
+          : null;
 
         await db.song.update({
           where: {
             id: songId
           }, data: {
-            s3Key: responseData?.s3Key,
-            thumbnailS3Key: responseData?.coverImageS3Key,
+            s3Key: responseData?.s3_key,
+            thumbnailS3Key: responseData?.cover_image_s3_key,
             status: response.ok ? "processed" : "failed",
           }
         })
@@ -183,7 +185,7 @@ export const generateSong = inngest.createFunction(
             id: songId,
           },
           data: {
-            stats: "no credits"
+            status: "no credits"
           },
         });
       });
