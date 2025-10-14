@@ -264,8 +264,3 @@ def main():
     result = GenerateMusicResponseS3(**response.json())
 
     print(f"Success: {result.s3_key} {result.cover_image_s3_key} {result.categories}")
-    # audio_bytes = base64.b64decode(result.audio_data)
-    # output_filename = "generated.wav"
-    
-    # with open(output_filename, "wb") as f:
-    #     f.write(audio_bytes)
