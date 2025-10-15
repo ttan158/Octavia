@@ -16,7 +16,7 @@ export default function SidebarMenuItems() {
     },
     {
       title: "Create",
-      url: "#",
+      url: "/create",
       icon: Music,
       active: false,
     },
