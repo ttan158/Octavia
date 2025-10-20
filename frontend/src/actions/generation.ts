@@ -98,7 +98,7 @@ export async function getPlayUrl(songId: string) {
     },
   });
 
-  return await getPresignedUrl(song.s3Key);
+  return await getPresignedUrl(song.s3Key!);
 }
 
 export async function getPresignedUrl(key: string) {
