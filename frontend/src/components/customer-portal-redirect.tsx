@@ -8,7 +8,7 @@ export default function CustomerPortalRedirect() {
     const portal = async () => {
       await authClient.customer.portal();
     };
-    portal();
+    void portal();
   }, []);
 
   return (
