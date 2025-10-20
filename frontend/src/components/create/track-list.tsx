@@ -25,6 +25,7 @@ import {
 } from "../ui/dropdown-menu";
 import { RenameDialog } from "./rename-dialog";
 import { useRouter } from "next/navigation";
+import { usePlayerStore } from "~/stores/use-player-store";
 
 export interface Track {
   id: string;
@@ -48,6 +49,7 @@ export function TrackList({ tracks }: { tracks: Track[] }) {
   const [loadingTrackId, setLoadingTrackId] = useState<string | null>(null);
   const [trackToRename, setTrackToRename] = useState<Track | null>(null);
   const router = useRouter();
+  const setTrack = usePlayerStore((state) => state.setTrack);
 
   const handleTrackSelect = async (track: Track) => {
     if (loadingTrackId) return;
@@ -55,7 +57,14 @@ export function TrackList({ tracks }: { tracks: Track[] }) {
     const playUrl = await getPlayUrl(track.id);
     setLoadingTrackId(null);
 
-    console.log(playUrl);
+    setTrack({
+      id: track.id,
+      title: track.title,
+      url: playUrl,
+      artwork: track.thumbnailUrl,
+      prompt: track.prompt,
+      createdByUserName: track.createdByUserName,
+    });
   };
 
   const handleRefresh = async () => {
