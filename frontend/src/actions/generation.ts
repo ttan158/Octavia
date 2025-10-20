@@ -52,6 +52,7 @@ export async function queueSong(
       prompt: generateRequest.prompt,
       lyrics: generateRequest.lyrics,
       fullDescribedSong: generateRequest.fullDescribedSong,
+      describedLyrics: generateRequest.describedLyrics,
       instrumental: generateRequest.instrumental,
       guidanceScale: guidanceScale,
       audioDuration: 180,

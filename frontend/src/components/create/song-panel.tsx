@@ -11,12 +11,12 @@ import { toast } from "sonner";
 import { generateSong, type GenerateRequest } from "~/actions/generation";
 
 const inspirationTags = [
-  "80's synth-pop",
+  "80s synth-pop",
   "Acoustic ballad",
   "Epic movie score",
+  "Lo-fi hip hop",
   "Driving rock anthem",
   "Summer beach vibe",
-  "Upbeat kpop",
 ];
 
 const styleTags = [
@@ -38,7 +38,7 @@ export function SongPanel() {
   const [styleInput, setStyleInput] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleStyleTagClick = (tag: string) => {
+  const handleStyleInputTagClick = (tag: string) => {
     const currentTags = styleInput
       .split(", ")
       .map((s) => s.trim())
@@ -52,6 +52,7 @@ export function SongPanel() {
       }
     }
   };
+
   const handleInspirationTagClick = (tag: string) => {
     const currentTags = description
       .split(", ")
@@ -72,12 +73,12 @@ export function SongPanel() {
       toast.error("Please describe your song before creating.");
       return;
     }
-
     if (mode === "custom" && !styleInput.trim()) {
-      toast.error("Please add some styles for your song");
+      toast.error("Please add some styles for your song.");
       return;
     }
 
+    // Generate song
     let requestBody: GenerateRequest;
 
     if (mode === "simple") {
@@ -126,17 +127,19 @@ export function SongPanel() {
             <TabsTrigger value="simple">Simple</TabsTrigger>
             <TabsTrigger value="custom">Custom</TabsTrigger>
           </TabsList>
+
           <TabsContent value="simple" className="mt-6 space-y-6">
             <div className="flex flex-col gap-3">
               <label className="text-sm font-medium">Describe your song</label>
               <Textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="A dreamy lofi hip hop song for studying"
+                placeholder="A dreamy lofi hip hop song, perfect for studying of relaxing"
                 className="min-h-[120px] resize-none"
               />
             </div>
 
+            {/* Lyrics button an instrumentals toggle */}
             <div className="flex items-center justify-between">
               <Button
                 variant="outline"
@@ -154,6 +157,7 @@ export function SongPanel() {
                 />
               </div>
             </div>
+
             <div className="flex flex-col gap-3">
               <label className="text-sm font-medium">Inspiration</label>
               <div className="w-full overflow-x-auto whitespace-nowrap">
@@ -174,6 +178,7 @@ export function SongPanel() {
               </div>
             </div>
           </TabsContent>
+
           <TabsContent value="custom" className="mt-6 space-y-6">
             <div className="flex flex-col gap-3">
               <div className="flex items-center justify-between">
@@ -207,13 +212,14 @@ export function SongPanel() {
                 placeholder={
                   lyricsMode === "write"
                     ? "Add your own lyrics here"
-                    : "Describe your lyrics here e.g. a sad song about love"
+                    : "Describe you lyrics, e.g., a sad song about lost love"
                 }
                 value={lyrics}
                 onChange={(e) => setLyrics(e.target.value)}
                 className="min-h-[100px] resize-none"
               />
             </div>
+
             <div className="flex items-center justify-between">
               <label className="text-sm font-medium">Instrumental</label>
               <Switch
@@ -221,6 +227,8 @@ export function SongPanel() {
                 onCheckedChange={setInstrumental}
               />
             </div>
+
+            {/* Styles */}
             <div className="flex flex-col gap-3">
               <label className="text-sm font-medium">Styles</label>
               <Textarea
@@ -235,8 +243,8 @@ export function SongPanel() {
                     <Badge
                       variant="secondary"
                       key={tag}
-                      className="hover:bg-secondary/80 flex-shrink-0 cursor-pointer text-xs"
-                      onClick={() => handleStyleTagClick(tag)}
+                      className="hover:bg-secondary/50 flex-shrink-0 cursor-pointer text-xs"
+                      onClick={() => handleStyleInputTagClick(tag)}
                     >
                       {tag}
                     </Badge>
@@ -247,6 +255,7 @@ export function SongPanel() {
           </TabsContent>
         </Tabs>
       </div>
+
       <div className="border-t p-4">
         <Button
           onClick={handleCreate}
