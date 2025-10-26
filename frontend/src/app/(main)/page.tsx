@@ -120,7 +120,7 @@ export default async function Page() {
           <div key={category} className="mt-6">
             <h2 className="text-xl font-semibold">{category}</h2>
             <div className="md: mt-4 grid grid-cols-2 grid-cols-4 gap-x-4 gap-y-6 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6">
-              {songs.map((song) => (
+              {song.map((song) => (
                 <SongCard key={song.id} song={song} />
               ))}
             </div>
